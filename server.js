@@ -1,24 +1,30 @@
 import express from 'express'
-
+import pkg from '@prisma/client'
+    const{ PrismaClient } = pkg 
+    const prisma = new PrismaClient()
 // objeto da biblioteca
 const app = express()
-
 //indica q vai usar o json
 app.use(express.json())
 
-//vetor pra guardar antes de ter o banco
-const usuarios = []
-
 // rotas
-app.get('/cadastro', (req, res) => {
-    //res.send('tudo ok com get') //parametro de resposta
+app.get('/cadastro', async (req, res) => {
+    
+    const lista_usuarios = await prisma.usuario.findMany()
+
     res.status(200).json(usuarios)
 }) //rota get, coloca 'como pega ela', funcao call back (requisicao, reposta)
 
-app.post('/cadastro', (req, res) => {
-    // console.log(req.body)
-    usuarios.push(req.body)
-    //res.status(201).send('tudo ok com post')
+app.post('/cadastro',async (req, res) => {
+
+   await prisma.usuario.create({
+        data:{
+            email: req.body.email ,
+            nome: req.body.nome ,
+            idade: req.body.idade
+        }
+    })
+
     res.status(201).json(req.body)
 })
 
